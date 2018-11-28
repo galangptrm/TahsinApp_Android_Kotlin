@@ -10,6 +10,7 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils.isEmpty
+import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.widget.Toast
@@ -25,6 +26,8 @@ class TestingActivity : AppCompatActivity() {
         _objectInitiation()
 
         _speechInitialization()
+
+//        testing()
         Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT)
 
     }
@@ -33,12 +36,12 @@ class TestingActivity : AppCompatActivity() {
 
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 10){
-            if (resultCode == Activity.RESULT_OK && data != null){
+        if (requestCode == 10) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
                 var _result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                 txtView_SpeechResult.setText(_result.get(0));
 
-                txtView_AyatPreview.setText("الحمد لله رب العالمين");
+//                txtView_AyatPreview.setText("");
 
                 _diff_match("الحمد لله رب العالمين", txtView_SpeechResult.text.toString())
 //                _levensteinDistance(txtView_AyatPreview.text.toString(), txtView_SpeechResult.text.toString())
@@ -47,26 +50,76 @@ class TestingActivity : AppCompatActivity() {
         }
     }
 
-    private fun _diff_match( strSpeech : String, strAyat : String ){
+    private fun testing() {
+        var numbers = "0123456789"
+        var ssb = SpannableString(numbers)
 
-        val dmp = diff_match_patch()
-        val diff = dmp.diff_main(strAyat, strSpeech)
-        // Result: [(-1, "Hell"), (1, "G"), (0, "o"), (1, "odbye"), (0, " World.")]
-//        dmp.diff_cleanupSemantic(diff)
-        // Result: [(-1, "Hello"), (1, "Goodbye"), (0, " World.")]
-        txtView_resultText.text = diff.toString()
+        ssb.setSpan(ForegroundColorSpan(Color.RED), 1, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        txtView_distanceResult.text = ssb
+        txtView_resultText.text = numbers.length.toString()
+
     }
 
-    private fun _objectInitiation(){
+    private fun _diff_match(strSpeech: String, strAyat: String) {
+
+        val dmp = diff_match_patch()
+        val diff = dmp.diff_main(strAyat, strSpeech, true)
+        dmp.Diff_Timeout = 5.0F
+        // Result: [(-1, "Hell"), (1, "G"), (0, "o"), (1, "odbye"), (0, " World.")]
+        dmp.diff_cleanupSemantic(diff)
+        // Result: [(-1, "Hello"), (1, "Goodbye"), (0, " World.")]
+
+        var levDistance = dmp.diff_levenshtein(diff)
+
+        var tempString = ""
+        var tempString2 = ""
+
+        for (indx in diff.indices) {
+            tempString += diff[indx].text
+            tempString2 += diff[indx].toString() + "\n"
+        }
+
+        var ss = SpannableString(tempString)
+
+        var tempIndx = 0
+        var tempIndx2 = 0
+
+        for (indx in diff.indices) {
+
+            if (diff[indx] == null) {
+                break
+            }
+            if (diff[indx].operation.name == "EQUAL") {
+//                var fcsBlu = BackgroundColorSpan(Color.BLUE)
+//                ss.setSpan(fcsBlu, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                tempIndx += diff[indx].text.length
+            }
+            else if (diff[indx].operation.name == "DELETE") {
+                var fcsRed = BackgroundColorSpan(Color.RED)
+                ss.setSpan(fcsRed, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                tempIndx += diff[indx].text.length
+            }
+            else if (diff[indx].operation.name == "INSERT") {
+                var fcsGrn = BackgroundColorSpan(Color.GREEN)
+                ss.setSpan(fcsGrn, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                tempIndx += diff[indx].text.length
+            }
+
+        }
+        txtView_distanceResult.text = ss
+        txtView_resultText.text = "Distance = "+levDistance.toString() + "\n" + tempString.length.toString() + "\n" + tempString2
+    }
+
+    private fun _objectInitiation() {
         val namaSurat = intent.getStringExtra("namaSurat_extra")
         val nomorAyat = intent.getIntExtra("nomorAyat_extra", 0)
         val textAyat = intent.getStringExtra("textAyat_extra")
 
         txtView_AyatPreview.setText(textAyat)
-        supportActionBar?.title = namaSurat + " : " +nomorAyat.toString()
+        supportActionBar?.title = namaSurat + " : " + nomorAyat.toString()
     }
 
-    private fun _speechInitialization(){
+    private fun _speechInitialization() {
 
         val speechIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
@@ -74,16 +127,16 @@ class TestingActivity : AppCompatActivity() {
 
         floatActBtn_speech.setOnClickListener {
             Toast.makeText(this, "Clicked 2", Toast.LENGTH_SHORT)
-            if (speechIntent.resolveActivity(packageManager) != null){
+            if (speechIntent.resolveActivity(packageManager) != null) {
                 startActivityForResult(speechIntent, 10)
-            } else{
+            } else {
                 Toast.makeText(this, "Your Device not Support", Toast.LENGTH_SHORT)
             }
         }
 
     }
 
-    private fun _levensteinDistance(stringPrimer : String, stringSekunder : String){
+    private fun _levensteinDistance(stringPrimer: String, stringSekunder: String) {
 
         txtView_distanceResult.text = "Jumlah kesalahan : " + execute(stringPrimer, stringSekunder).toString()
 
@@ -100,7 +153,7 @@ class TestingActivity : AppCompatActivity() {
         var i = stringBtemp.length
         var h = 0
 
-        while (h < indexKesalahan!!.size && indexKesalahan!!.size!=0){
+        while (h < indexKesalahan!!.size && indexKesalahan!!.size != 0) {
             tempString += indexKesalahan!![h].noString.toString() + " - " + indexKesalahan!![h].jenis + " - " + indexKesalahan!![h].hurufAwal + " - " + indexKesalahan!![h].hurufAkhir + "\n"
             h++
         }
@@ -135,7 +188,7 @@ class TestingActivity : AppCompatActivity() {
 //            tempString += indx.toString() +"|"+ indexKesalahan!![indx].noString.toString() + " - " + indexKesalahan!![indx].jenis + " - " + indexKesalahan!![indx].hurufAwal + " - " + indexKesalahan!![indx].hurufAkhir + "\n"
 //        }
 
-        txtView_resultText.text =  tempString
+        txtView_resultText.text = tempString
 
         indexKesalahan!!.clear()
 
@@ -181,9 +234,9 @@ class TestingActivity : AppCompatActivity() {
         return temp[str1.size][str2.size]
     }
 
-    var texts : MutableList<String> = ArrayList()
+    var texts: MutableList<String> = ArrayList()
 
-    var indexKesalahan : MutableList<ObjKesalahan>? = ArrayList()
+    var indexKesalahan: MutableList<ObjKesalahan>? = ArrayList()
 
     /**
      * Prints the actual edits which needs to be done.
@@ -207,20 +260,20 @@ class TestingActivity : AppCompatActivity() {
             } else if (T[i][j] == T[i - 1][j - 1] + 1) {
                 //stringTemp = "Edit " + str2[j - 1] + "(" + j + ") in string2 to " + str1[i - 1]
                 //println("Edit " + str2[j - 1] + "(" + j + ") in string2 to " + str1[i - 1])
-                indexKesalahan!!.add(ObjKesalahan("edit", i, str2[j-1].toString(), str1[i-1].toString()))
+                indexKesalahan!!.add(ObjKesalahan("edit", i, str2[j - 1].toString(), str1[i - 1].toString()))
 //                texts.add("Edit " + str2[j - 1] + "(" + j + ") in string2 to " + str1[i - 1])
                 i = i - 1
                 j = j - 1
             } else if (T[i][j] == T[i - 1][j] + 1) {
                 //stringTemp = "Add in string2 " + str1[i - 1]
                 //println("Add in string2 " + str1[i - 1])
-                indexKesalahan!!.add(ObjKesalahan("add", i, "",str1[i-1].toString()))
+                indexKesalahan!!.add(ObjKesalahan("add", i, "", str1[i - 1].toString()))
 //                texts.add("Add in string2 " + str1[i - 1])
                 i = i - 1
             } else if (T[i][j] == T[i][j - 1] + 1) {
                 //stringTemp = "Delete in string2 " + str2[j - 1]
                 //println("Delete in string2 " + str2[j - 1])
-                indexKesalahan!!.add(ObjKesalahan("delete", j, str2[j-1].toString(),""))
+                indexKesalahan!!.add(ObjKesalahan("delete", j, str2[j - 1].toString(), ""))
 //                texts.add("Delete in string2 " + str2[j - 1])
                 j = j - 1
             } else {
@@ -265,9 +318,9 @@ private operator fun CharSequence.plusAssign(ss: SpannableStringBuilder) {
 }
 
 class ObjKesalahan
-            (val jenis : String,
-             val noString : Int,
-             val hurufAwal : String,
-             val hurufAkhir : String)
+(val jenis: String,
+ val noString: Int,
+ val hurufAwal: String,
+ val hurufAkhir: String)
 
 
