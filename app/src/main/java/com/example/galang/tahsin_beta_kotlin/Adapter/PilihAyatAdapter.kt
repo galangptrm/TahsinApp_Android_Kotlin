@@ -38,7 +38,6 @@ class PilihAyatAdapter (val ayatList: AyatList, val namaSurat : String): Recycle
 
             holder.view.context.startActivity(toBacaAyat_intent)
         }
-
     }
 }
 

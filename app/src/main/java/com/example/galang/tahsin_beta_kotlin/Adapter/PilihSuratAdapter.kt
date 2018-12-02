@@ -18,15 +18,11 @@ class PilihSuratAdapter (val suratList: SuratList): RecyclerView.Adapter<PilihSu
         val cellForRow = layoutInflater.inflate(R.layout.list_surat_layout, parent, false)
         return PilihSuratViewHolder(cellForRow)
     }
-
     override fun getItemCount(): Int {
         return suratList.hasil.count()
     }
-
     override fun onBindViewHolder(holder: PilihSuratViewHolder, position: Int) {
-
         val surat = suratList.hasil.get(position)
-
         holder?.view?.txtView_NomorSurat?.text = surat.nomor.toString()
         holder?.view?.txtView_NamaSurat?.text = surat.nama
         holder?.view?.txtView_TurunSurat?.text = surat.type
@@ -41,7 +37,6 @@ class PilihSuratAdapter (val suratList: SuratList): RecyclerView.Adapter<PilihSu
             toAyatPage_intent.putExtra("nomorSurat_extra", surat.nomor)
 
             holder.view.context.startActivity(toAyatPage_intent)
-
         }
     }
 }

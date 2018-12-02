@@ -160,7 +160,6 @@ public class diff_match_patch {
         if (text1 == null || text2 == null) {
             throw new IllegalArgumentException("Null inputs. (diff_main)");
         }
-
         // Check for equality (speedup).
         LinkedList<Diff> diffs;
         if (text1.equals(text2)) {
@@ -170,22 +169,18 @@ public class diff_match_patch {
             }
             return diffs;
         }
-
         // Trim off common prefix (speedup).
         int commonlength = diff_commonPrefix(text1, text2);
         String commonprefix = text1.substring(0, commonlength);
         text1 = text1.substring(commonlength);
         text2 = text2.substring(commonlength);
-
         // Trim off common suffix (speedup).
         commonlength = diff_commonSuffix(text1, text2);
         String commonsuffix = text1.substring(text1.length() - commonlength);
         text1 = text1.substring(0, text1.length() - commonlength);
         text2 = text2.substring(0, text2.length() - commonlength);
-
         // Compute the diff on the middle block.
         diffs = diff_compute(text1, text2, checklines, deadline);
-
         // Restore the prefix and suffix.
         if (commonprefix.length() != 0) {
             diffs.addFirst(new Diff(Operation.EQUAL, commonprefix));
@@ -193,7 +188,6 @@ public class diff_match_patch {
         if (commonsuffix.length() != 0) {
             diffs.addLast(new Diff(Operation.EQUAL, commonsuffix));
         }
-
         diff_cleanupMerge(diffs);
         return diffs;
     }
