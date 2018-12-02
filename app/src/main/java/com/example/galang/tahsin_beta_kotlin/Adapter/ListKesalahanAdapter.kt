@@ -1,5 +1,9 @@
 package com.example.galang.tahsin_beta_kotlin.Adapter
 
+import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +12,7 @@ import com.example.galang.tahsin_beta_kotlin.Model.Kesalahan
 import com.example.galang.tahsin_beta_kotlin.R
 import kotlinx.android.synthetic.main.list_kesalahan_layout.view.*
 
-class ListKesalahanAdapter (var kesalahanList: ArrayList<Kesalahan>): RecyclerView.Adapter<ListKesalahanViewHolder>() {
+class ListKesalahanAdapter (val kesalahanList: ArrayList<Kesalahan>): RecyclerView.Adapter<ListKesalahanViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListKesalahanViewHolder {
         val layoutInflater = LayoutInflater.from(parent?.context)
@@ -17,21 +21,29 @@ class ListKesalahanAdapter (var kesalahanList: ArrayList<Kesalahan>): RecyclerVi
     }
 
     override fun getItemCount(): Int {
-        return kesalahanList.size
+        return kesalahanList.count()
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onBindViewHolder(holder: ListKesalahanViewHolder, position: Int) {
 
         val kesalahan = kesalahanList.get(position)
 
-        holder?.view?.txtView_jenisKesalahan?.text = kesalahan.jenis
-        holder?.view?.txtView_lokasiKesalahan?.text = "Kata"+" '"+ kesalahan.teks +"' tidak terdapat pada ayat"
-        if (kesalahan.jenis == "DELETE"){
+        if (kesalahan.jenis.equals("DELETE")){
+            holder?.view?.txtView_jenisKesalahan?.text = " HAPUS "
             holder?.view?.txtView_lokasiKesalahan?.text = "Kata"+" '"+ kesalahan.teks +"' tidak terdapat pada ayat"
-        } else if(kesalahan.jenis == "INSERT"){
-            holder?.view?.txtView_lokasiKesalahan?.text = "Anda lupa membaca"+" '"+ kesalahan.teks +"' pada ayat"
-        }
+            holder?.view?.txtView_jenisKesalahan.setBackgroundColor(Color.RED)
 
+        } else if(kesalahan.jenis.equals("INSERT")){
+            holder?.view?.txtView_jenisKesalahan?.text = " TAMBAH "
+            holder?.view?.txtView_lokasiKesalahan?.text = "Anda lupa membaca"+" '"+ kesalahan.teks +"' pada ayat"
+            holder?.view?.txtView_jenisKesalahan.setBackgroundColor(Color.GREEN)
+
+        } else {
+            holder?.view?.setVisibility(View.GONE);
+            holder?.view?.setLayoutParams(RecyclerView.LayoutParams(0, 0))
+        }
+        holder?.view?.txtView_jenisKesalahan.setTextColor(Color.WHITE)
     }
 }
 
