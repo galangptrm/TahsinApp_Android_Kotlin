@@ -29,8 +29,6 @@ class TestingActivity : AppCompatActivity() {
 
         _speechInitialization()
 
-//        testing()
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -42,6 +40,7 @@ class TestingActivity : AppCompatActivity() {
                 txtView_SpeechResult.setText(_result.get(0));
 
                 kesalahanList.clear()
+
                 _diff_match("الحمد لله رب العالمين", txtView_SpeechResult.text.toString())
 
                 fetchKesalahan(this.kesalahanList)
@@ -49,11 +48,11 @@ class TestingActivity : AppCompatActivity() {
         }
     }
 
+    var kesalahanList : ArrayList<Kesalahan> = arrayListOf()
     private fun fetchKesalahan(kesalahanList : ArrayList<Kesalahan>){
         recView_kesalahan.layoutManager = LinearLayoutManager(this)
         recView_kesalahan.adapter = ListKesalahanAdapter(kesalahanList)
     }
-    var kesalahanList : ArrayList<Kesalahan> = arrayListOf()
 
     private fun _diff_match(strSpeech: String, strAyat: String) {
 
@@ -63,46 +62,53 @@ class TestingActivity : AppCompatActivity() {
         dmp.diff_cleanupSemantic(diff)
 
         val levDistance = dmp.diff_levenshtein(diff)
-        val percentDifference = levDistance/strSpeech.length
+        val percentDifference = levDistance.toFloat()/strSpeech.length.toFloat()
         txtView_distanceResult.text  = ""
 
         if (percentDifference >= 0.92 ){
-            txtView_distanceResult.text = "Perbedaan bacaan terlalu besar, kemungkinan anda salah membaca ayat" + (levDistance/strSpeech.length).toString()
+            txtView_distanceResult.text = "Perbedaan bacaan terlalu besar, " +
+                    "kemungkinan anda salah membaca ayat (" + percentDifference +")"
         }else{
-            txtView_distanceResult.text = "Distance = " + (levDistance/strSpeech.length).toString()
+            txtView_distanceResult.text = "Distance = " + percentDifference
             var tempString = ""
 
             for (indx in diff.indices) {
                 tempString += diff[indx].text
-                kesalahanList.add(indx, Kesalahan(diff[indx].operation.name, diff[indx].text))
             }
 
             var ss = SpannableString(tempString)
             var tempIndx = 0
 
-            for (indx in diff.indices) {
-                if (diff[indx] == null) {
-                    break
-                }
-                if (diff[indx].operation.name == "EQUAL") {
-                    tempIndx += diff[indx].text.length
-                }
-                else if (diff[indx].operation.name == "DELETE") {
-                    var fcsRed = BackgroundColorSpan(Color.RED)
-                    ss.setSpan(fcsRed, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    tempIndx += diff[indx].text.length
-                }
-                else if (diff[indx].operation.name == "INSERT") {
-                    var fcsGrn = BackgroundColorSpan(Color.GREEN)
-                    ss.setSpan(fcsGrn, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    tempIndx += diff[indx].text.length
+            if (diff!=null){
+                for (indx in diff.indices) {
+                    if (diff[indx] == null) {
+                        break
+                    }
+                    if (diff[indx].operation.name == "EQUAL") {
+                        kesalahanList.add(indx, Kesalahan(diff[indx].operation.name, diff[indx].text,
+                                tempIndx,tempIndx + diff[indx].text.length))
+                        tempIndx += diff[indx].text.length
+                    }
+                    else if (diff[indx].operation.name == "DELETE") {
+                        var fcsRed = BackgroundColorSpan(Color.RED)
+                        ss.setSpan(fcsRed, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        kesalahanList.add(indx, Kesalahan(diff[indx].operation.name, diff[indx].text,
+                                tempIndx,tempIndx + diff[indx].text.length))
+                        tempIndx += diff[indx].text.length
+                    }
+                    else if (diff[indx].operation.name == "INSERT") {
+                        var fcsGrn = BackgroundColorSpan(Color.GREEN)
+                        ss.setSpan(fcsGrn, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        kesalahanList.add(indx, Kesalahan(diff[indx].operation.name, diff[indx].text,
+                                tempIndx,tempIndx + diff[indx].text.length))
+                        tempIndx += diff[indx].text.length
+                    }
                 }
             }
             txtView_SpeechResult.text = ss
         }
 
     }
-
 
     private fun _objectInitiation() {
         val namaSurat = intent.getStringExtra("namaSurat_extra")
