@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.support.v7.widget.LinearLayoutManager
 import android.text.SpannableString
-import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
@@ -43,13 +42,14 @@ class TestingActivity : AppCompatActivity() {
 
                 _diff_match("الحمد لله رب العالمين", txtView_SpeechResult.text.toString())
 
-                fetchKesalahan(this.kesalahanList)
+                _fetchKesalahan(this.kesalahanList)
             }
         }
     }
 
     var kesalahanList : ArrayList<Kesalahan> = arrayListOf()
-    private fun fetchKesalahan(kesalahanList : ArrayList<Kesalahan>){
+
+    private fun _fetchKesalahan(kesalahanList : ArrayList<Kesalahan>){
         recView_kesalahan.layoutManager = LinearLayoutManager(this)
         recView_kesalahan.adapter = ListKesalahanAdapter(kesalahanList)
     }
@@ -144,10 +144,6 @@ class TestingActivity : AppCompatActivity() {
         txtView_distanceResult.text = ssb
 
     }
-}
-
-private operator fun CharSequence.plusAssign(ss: SpannableStringBuilder) {
-
 }
 
 
