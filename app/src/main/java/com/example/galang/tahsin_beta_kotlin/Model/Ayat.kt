@@ -8,5 +8,4 @@ class AyatData (val number : Int,
 
 class Ayat (val number: Int,
             val text : String,
-            val numberInSurah : Int,
-            val juz : Int)
+            val numberInSurah : Int)

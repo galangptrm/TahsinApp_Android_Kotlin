@@ -35,6 +35,8 @@ class PilihSuratAdapter (val suratList: SuratList): RecyclerView.Adapter<PilihSu
             val toAyatPage_intent = Intent(holder.view.context, PilihAyatActivity::class.java)
             toAyatPage_intent.putExtra("namaSurat_extra", surat.nama)
             toAyatPage_intent.putExtra("nomorSurat_extra", surat.nomor)
+            toAyatPage_intent.putExtra("ayatAwal_extra", surat.start)
+            toAyatPage_intent.putExtra("jumlahAyat_extra", surat.ayat.toInt())
 
             holder.view.context.startActivity(toAyatPage_intent)
         }

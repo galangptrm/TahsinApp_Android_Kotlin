@@ -36,6 +36,7 @@ class PilihSuratActivity : AppCompatActivity() {
                 runOnUiThread(){
                     recView_pilihSurat.adapter = PilihSuratAdapter(suratList)
                 }
+
             }
         })
     }

@@ -7,4 +7,5 @@ class Surat (val nomor : Int,
              val asma : String,
              val ayat : String,
              val type : String,
-             val arti : String)
+             val start : Int)
+

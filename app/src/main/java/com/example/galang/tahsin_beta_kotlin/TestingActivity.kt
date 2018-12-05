@@ -5,20 +5,29 @@ import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.support.v7.widget.LinearLayoutManager
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.widget.Toast
 import com.example.galang.tahsin_beta_kotlin.Adapter.ListKesalahanAdapter
 import com.example.galang.tahsin_beta_kotlin.Algorithm.diff_match_patch
+import com.example.galang.tahsin_beta_kotlin.Model.AyatGundulList
 import com.example.galang.tahsin_beta_kotlin.Model.Kesalahan
 import kotlinx.android.synthetic.main.activity_testing.*
 import kotlin.collections.ArrayList
+import com.github.zagum.speechrecognitionview.adapters.RecognitionListenerAdapter
+import com.github.zagum.speechrecognitionview.RecognitionProgressView
 
-class TestingActivity : AppCompatActivity() {
+
+
+
+class TestingActivity : AppCompatActivity(), RecognitionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,23 +39,7 @@ class TestingActivity : AppCompatActivity() {
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 10) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-
-                var _result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                txtView_SpeechResult.setText(_result.get(0));
-
-                kesalahanList.clear()
-
-                _diff_match("الحمد لله رب العالمين", txtView_SpeechResult.text.toString())
-
-                _fetchKesalahan(this.kesalahanList)
-            }
-        }
-    }
-
+    var ayatGundul = ""
     var kesalahanList : ArrayList<Kesalahan> = arrayListOf()
 
     private fun _fetchKesalahan(kesalahanList : ArrayList<Kesalahan>){
@@ -67,9 +60,9 @@ class TestingActivity : AppCompatActivity() {
 
         if (percentDifference >= 0.92 ){
             txtView_distanceResult.text = "Perbedaan bacaan terlalu besar, " +
-                    "kemungkinan anda salah membaca ayat (" + percentDifference +")"
+                    "kemungkinan anda salah membaca ayat (" + percentDifference*100 +"%)"
         }else{
-            txtView_distanceResult.text = "Distance = " + percentDifference
+            txtView_distanceResult.text = "Jumlah Kesalahan = " + (percentDifference*100) + "%"
             var tempString = ""
 
             for (indx in diff.indices) {
@@ -111,24 +104,36 @@ class TestingActivity : AppCompatActivity() {
     }
 
     private fun _objectInitiation() {
-        val namaSurat = intent.getStringExtra("namaSurat_extra")
-        val nomorAyat = intent.getIntExtra("nomorAyat_extra", 0)
-        val textAyat = intent.getStringExtra("textAyat_extra")
+        val namaSurat   = intent.getStringExtra("namaSurat_extra")
+        val nomorAyat   = intent.getIntExtra("nomorAyat_extra", 0)
+        val textAyat    = intent.getStringExtra("textAyat_extra")
+        val urutanAyat  = intent.getIntExtra("urutanAyat_extra", 0)
 
-        txtView_AyatPreview.setText(textAyat)
+        this.ayatGundul = AyatGundulList().getAyat(urutanAyat-1)
+
+        txtView_distanceResult.text = ayatGundul
+
+        txtView_AyatPreview.text = textAyat
         supportActionBar?.title = namaSurat + " : " + nomorAyat.toString()
     }
 
     private fun _speechInitialization() {
 
-        val speechIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA")
+        var speech = SpeechRecognizer.createSpeechRecognizer(this)
+        speech.setRecognitionListener(this)
+
+        val recognitionProgressView = this.findViewById<RecognitionProgressView>(R.id.recognition_animation)
+        recognitionProgressView.setSpeechRecognizer(speech)
+        recognitionProgressView.setRecognitionListener(this)
 
         floatActBtn_speech.setOnClickListener {
-            Toast.makeText(this, "Clicked 2", Toast.LENGTH_SHORT).show()
-            if (speechIntent.resolveActivity(packageManager) != null) {
-                startActivityForResult(speechIntent, 10)
+            Toast.makeText(this, "Listening...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA")
+            if (intent.resolveActivity(packageManager) != null) {
+                speech.startListening(intent)
             } else {
                 Toast.makeText(this, "Your Device not Support", Toast.LENGTH_SHORT).show()
             }
@@ -144,6 +149,123 @@ class TestingActivity : AppCompatActivity() {
         txtView_distanceResult.text = ssb
 
     }
+
+    override fun onReadyForSpeech(params: Bundle?) {
+
+    }
+
+    override fun onRmsChanged(rmsdB: Float) {
+
+    }
+
+    override fun onBufferReceived(buffer: ByteArray?) {
+
+    }
+
+    override fun onPartialResults(partialResults: Bundle?) {
+        txtView_SpeechResult.text = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString()
+    }
+
+    override fun onEvent(eventType: Int, params: Bundle?) {
+
+    }
+
+    override fun onBeginningOfSpeech() {
+        txtView_distanceResult.text = "Listening..."
+    }
+
+    override fun onEndOfSpeech() {
+        txtView_distanceResult.text = ""
+    }
+
+    override fun onError(error: Int) {
+        Toast.makeText(this, "Error : "+error, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onResults(results: Bundle?) {
+        var data = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        txtView_SpeechResult.text = data?.get(0).toString()
+        txtView_distanceResult.text = ""
+        kesalahanList.clear()
+        _diff_match(ayatGundul, txtView_SpeechResult.text.toString())
+        _fetchKesalahan(this.kesalahanList)
+    }
+
+    private fun onPlayAnimation(recogView : RecognitionProgressView){
+        recogView.play()
+    }
+    private fun onStopAnimation(recogView : RecognitionProgressView){
+        recogView.stop()
+    }
+
 }
+
+//class listener : RecognitionListener {
+//
+//    override fun onReadyForSpeech(params: Bundle) {
+//        Log.d(TAG, "onReadyForSpeech")
+//
+//    }
+//
+//    override fun onBeginningOfSpeech() {
+//        Log.d(TAG, "onBeginningOfSpeech")
+//    }
+//
+//    override fun onRmsChanged(rmsdB: Float) {
+//        Log.d(TAG, "onRmsChanged")
+//    }
+//
+//    override fun onBufferReceived(buffer: ByteArray) {
+//        Log.d(TAG, "onBufferReceived")
+//    }
+//
+//    override fun onEndOfSpeech() {
+//        Log.d(TAG, "onEndofSpeech")
+//    }
+//
+//    override fun onError(error: Int) {
+//        Log.d(TAG, "Kesalahan $error")
+//    }
+//
+//    override fun onResults(results: Bundle) {
+//        var str = String()
+//        val data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+//        val getViewInterface: viewInterface? = null
+//        getViewInterface?.getOnResults(data)
+//        Log.d(TAG, "onResults")
+//    }
+//
+//    override fun onPartialResults(partialResults: Bundle) {
+////        Log.d(TAG, "onPartialResults")
+//        val data = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+//
+//        Log.d(TAG, "onPartials")
+//    }
+//
+//    override fun onEvent(eventType: Int, params: Bundle) {
+//        Log.d(TAG, "onEvent $eventType")
+//    }
+//}
+
+//interface viewInterface {
+//
+//    fun getOnResults(results: ArrayList<String>)
+//
+//}
+
+
+
+
+//fun onClick(v: View) {
+//    if (v.getId() === R.id.btn_speak) {
+//        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+//        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+//        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "voice.recognition.test")
+//
+//        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5)
+//        sr.startListening(intent)
+//        Log.i("111111", "11111111")
+//    }
+//}
 
 
