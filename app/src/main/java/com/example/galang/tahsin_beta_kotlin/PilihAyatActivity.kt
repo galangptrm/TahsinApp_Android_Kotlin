@@ -20,44 +20,39 @@ class PilihAyatActivity : AppCompatActivity() {
         recView_pilihAyat.layoutManager = LinearLayoutManager(this)
 
         //Parsing the Extra Intent
-        val namaSurat = intent.getStringExtra("namaSurat_extra")
-        val nomorSurat = intent.getIntExtra("nomorSurat_extra", 0)
-        val urutanAyatAwal = intent.getIntExtra("ayatAwal_extra", 0)
-        val jumlahAyat = intent.getIntExtra("jumlahAyat_extra", 0)
-
-        this.urutanAyatAwal = urutanAyatAwal
-        this.jumlahAyat = jumlahAyat
+        val namaSurat       = intent.getStringExtra("namaSurat_extra")                  // NAMA SURAT
+        val nomorSurat      = intent.getIntExtra("nomorSurat_extra", 1)     //NOMOR SURAT
+        val urutanAyatAwal  = intent.getIntExtra("ayatAwal_extra", 1)       //URUTAN AYAT PERTAMA DARI KESELURUHAN ALQURAN
+        val jumlahAyat      = intent.getIntExtra("jumlahAyat_extra", 1)     //JUMLAH AYAT
 
         supportActionBar?.title = nomorSurat.toString()+" "+namaSurat
-        fetchJson(nomorSurat.toString(), namaSurat)
-
+        fetchJson(namaSurat, urutanAyatAwal, jumlahAyat)
     }
 
-    var urutanAyatAwal  = 0
-    var jumlahAyat      = 0
-
-    fun fetchJson(nomorSurat : String, namaSurat : String){
-        runOnUiThread{
+    fun fetchJson(namaSurat : String, urutanAyatAwal : Int, jumlahAyat : Int){
+//        runOnUiThread{
             var listAyat = AyatDiakritikList().getSomeAyats(urutanAyatAwal, urutanAyatAwal+jumlahAyat)
             recView_pilihAyat.adapter = PilihAyatAdapter(listAyat, namaSurat, urutanAyatAwal)
-        }
-//        val URL_AYAT = "http://api.alquran.cloud/surah/"+nomorSurat
-//        val request = Request.Builder().url(URL_AYAT).build()
-//        val httpClient = OkHttpClient()
-//        httpClient.newCall(request).enqueue(object : Callback {
-//            override fun onFailure(call: Call?, e: IOException?) {
-//                Toast.makeText(this@PilihAyatActivity, "Request URL gagal", Toast.LENGTH_SHORT).show()
-//            }
-//            override fun onResponse(call: Call?, response: Response?) {
-//                val responseBody = response?.body()?.string()
-//                println(responseBody)
-//                val gsonAyat = GsonBuilder().create()
-//                val ayatList = gsonAyat.fromJson(responseBody, AyatList::class.java)
-//                runOnUiThread{
-//                    var listAyat = AyatDiakritikList().getSomeAyats(urutanAyatAwal, urutanAyatAwal+jumlahAyat)
-//                    recView_pilihAyat.adapter = PilihAyatAdapter(listAyat, namaSurat, urutanAyatAwal)
-//                }
-//            }
-//        })
+//        }
+/*        val URL_AYAT = "http://api.alquran.cloud/surah/"+nomorSurat
+        val request = Request.Builder().url(URL_AYAT).build()
+        val httpClient = OkHttpClient()
+        httpClient.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call?, e: IOException?) {
+                Toast.makeText(this@PilihAyatActivity, "Request URL gagal", Toast.LENGTH_SHORT).show()
+            }
+            override fun onResponse(call: Call?, response: Response?) {
+                val responseBody = response?.body()?.string()
+                println(responseBody)
+                val gsonAyat = GsonBuilder().create()
+                val ayatList = gsonAyat.fromJson(responseBody, AyatList::class.java)
+                runOnUiThread{
+                    var listAyat = AyatDiakritikList().getSomeAyats(urutanAyatAwal, urutanAyatAwal+jumlahAyat)
+                    recView_pilihAyat.adapter = PilihAyatAdapter(listAyat, namaSurat, urutanAyatAwal)
+                }
+            }
+        })
+*/
     }
+
 }

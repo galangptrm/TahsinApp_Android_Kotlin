@@ -1,5 +1,6 @@
 package com.example.galang.tahsin_beta_kotlin.Adapter
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -30,14 +31,14 @@ class ListKesalahanAdapter (val kesalahanList: ArrayList<Kesalahan>): RecyclerVi
         val kesalahan = kesalahanList.get(position)
 
         if (kesalahan.jenis.equals("DELETE")){
-            holder?.view?.txtView_jenisKesalahan?.text = " HAPUS "
+            holder?.view?.txtView_jenisKesalahan?.text = " Kelebihan huruf "
             holder?.view?.txtView_lokasiKesalahan?.text = "Kata"+" '"+ kesalahan.teks +"' tidak terdapat pada ayat"
             holder?.view?.txtView_jenisKesalahan.setBackgroundColor(Color.RED)
 
         } else if(kesalahan.jenis.equals("INSERT")){
-            holder?.view?.txtView_jenisKesalahan?.text = " TAMBAH "
+            holder?.view?.txtView_jenisKesalahan?.text = " Kekurangan huruf "
             holder?.view?.txtView_lokasiKesalahan?.text = "Anda lupa membaca"+" '"+ kesalahan.teks +"' pada ayat"
-            holder?.view?.txtView_jenisKesalahan.setBackgroundColor(Color.GREEN)
+            holder?.view?.txtView_jenisKesalahan.setBackgroundColor(Color.BLUE)
 
         } else {
             holder?.view?.setVisibility(View.GONE);

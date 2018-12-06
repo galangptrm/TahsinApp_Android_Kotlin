@@ -8,4 +8,3 @@ class Surat (val nomor : Int,
              val ayat : String,
              val type : String,
              val start : Int)
-

@@ -2,12 +2,15 @@ package com.example.galang.tahsin_beta_kotlin
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.text.SpannableString
 import android.text.Spanned
@@ -23,8 +26,9 @@ import kotlinx.android.synthetic.main.activity_testing.*
 import kotlin.collections.ArrayList
 import com.github.zagum.speechrecognitionview.adapters.RecognitionListenerAdapter
 import com.github.zagum.speechrecognitionview.RecognitionProgressView
-
-
+import java.security.Permission
+import android.Manifest
+import android.view.View
 
 
 class TestingActivity : AppCompatActivity(), RecognitionListener {
@@ -33,10 +37,31 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_testing)
 
+        _permissionRequest()
+
         _objectInitiation()
 
         _speechInitialization()
 
+    }
+
+    private fun _permissionRequest(){
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.RECORD_AUDIO)) {
+            } else {
+                var MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.RECORD_AUDIO), MY_PERMISSIONS_REQUEST_RECORD_AUDIO)
+                Toast.makeText(this, "Record Persmission Granted", Toast.LENGTH_SHORT).show()
+
+            }
+        } else {
+            // Permission has already been granted
+        }
     }
 
     var ayatGundul = ""
@@ -60,9 +85,9 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
 
         if (percentDifference >= 0.92 ){
             txtView_distanceResult.text = "Perbedaan bacaan terlalu besar, " +
-                    "kemungkinan anda salah membaca ayat (" + percentDifference*100 +"%)"
+                    "kemungkinan anda salah membaca ayat (" + "%.2f".format(percentDifference*100) +"%)"
         }else{
-            txtView_distanceResult.text = "Jumlah Kesalahan = " + (percentDifference*100) + "%"
+            txtView_distanceResult.text = "Jumlah Kesalahan = " + "%.2f".format(percentDifference*100) + "%"
             var tempString = ""
 
             for (indx in diff.indices) {
@@ -90,7 +115,7 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
                         tempIndx += diff[indx].text.length
                     }
                     else if (diff[indx].operation.name == "INSERT") {
-                        var fcsGrn = BackgroundColorSpan(Color.GREEN)
+                        var fcsGrn = BackgroundColorSpan(Color.BLUE)
                         ss.setSpan(fcsGrn, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                         kesalahanList.add(indx, Kesalahan(diff[indx].operation.name, diff[indx].text,
                                 tempIndx,tempIndx + diff[indx].text.length))
@@ -104,14 +129,15 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
     }
 
     private fun _objectInitiation() {
+
         val namaSurat   = intent.getStringExtra("namaSurat_extra")
-        val nomorAyat   = intent.getIntExtra("nomorAyat_extra", 0)
+        val nomorAyat   = intent.getIntExtra("nomorAyat_extra", 1)
         val textAyat    = intent.getStringExtra("textAyat_extra")
-        val urutanAyat  = intent.getIntExtra("urutanAyat_extra", 0)
+        val urutanAyat  = intent.getIntExtra("urutanAyat_extra", 1)
 
-        this.ayatGundul = AyatGundulList().getAyat(urutanAyat-1)
+        this.ayatGundul = AyatGundulList().getAyat(urutanAyat)
 
-        txtView_distanceResult.text = ayatGundul
+        txtView_distanceResult.text = "Tekan tombol rekam dan mulai membaca ayat"
 
         txtView_AyatPreview.text = textAyat
         supportActionBar?.title = namaSurat + " : " + nomorAyat.toString()
@@ -119,26 +145,42 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
 
     private fun _speechInitialization() {
 
-        var speech = SpeechRecognizer.createSpeechRecognizer(this)
+        val speech = SpeechRecognizer.createSpeechRecognizer(this)
         speech.setRecognitionListener(this)
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA")
 
         val recognitionProgressView = this.findViewById<RecognitionProgressView>(R.id.recognition_animation)
+        this.findViewById<RecognitionProgressView>(R.id.recognition_animation).visibility = View.INVISIBLE
         recognitionProgressView.setSpeechRecognizer(speech)
         recognitionProgressView.setRecognitionListener(this)
+        recognitionProgressView.play()
+
+        recognitionProgressView.setCircleRadiusInDp(2)
+        recognitionProgressView.setSpacingInDp(2)
+        recognitionProgressView.setIdleStateAmplitudeInDp(2)
+        recognitionProgressView.setRotationRadiusInDp(10)
+        val heights = intArrayOf(17, 15, 22, 15, 12)
+        val colors = intArrayOf(
+            ContextCompat.getColor(this, R.color.colorAccent),
+            ContextCompat.getColor(this, R.color.colorAccent),
+            ContextCompat.getColor(this, R.color.colorAccent),
+            ContextCompat.getColor(this, R.color.colorAccent),
+            ContextCompat.getColor(this, R.color.colorAccent)
+        )
+        recognitionProgressView.setColors(colors)
+        recognitionProgressView.setBarMaxHeightsInDp(heights)
 
         floatActBtn_speech.setOnClickListener {
-            Toast.makeText(this, "Listening...", Toast.LENGTH_SHORT).show()
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA")
+
             if (intent.resolveActivity(packageManager) != null) {
                 speech.startListening(intent)
             } else {
                 Toast.makeText(this, "Your Device not Support", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
     private fun testing() {
@@ -151,7 +193,6 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
     }
 
     override fun onReadyForSpeech(params: Bundle?) {
-
     }
 
     override fun onRmsChanged(rmsdB: Float) {
@@ -171,101 +212,29 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
     }
 
     override fun onBeginningOfSpeech() {
-        txtView_distanceResult.text = "Listening..."
+        txtView_distanceResult.text = "Mendengarkan..."
+        this.findViewById<RecognitionProgressView>(R.id.recognition_animation).visibility = View.VISIBLE
     }
 
     override fun onEndOfSpeech() {
         txtView_distanceResult.text = ""
+        this.findViewById<RecognitionProgressView>(R.id.recognition_animation).visibility = View.INVISIBLE
     }
 
     override fun onError(error: Int) {
         Toast.makeText(this, "Error : "+error, Toast.LENGTH_SHORT).show()
+        txtView_distanceResult.text = "Tekan tombol rekam dan mulai membaca ayat"
     }
 
     override fun onResults(results: Bundle?) {
-        var data = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        val data = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         txtView_SpeechResult.text = data?.get(0).toString()
         txtView_distanceResult.text = ""
+
         kesalahanList.clear()
         _diff_match(ayatGundul, txtView_SpeechResult.text.toString())
         _fetchKesalahan(this.kesalahanList)
     }
-
-    private fun onPlayAnimation(recogView : RecognitionProgressView){
-        recogView.play()
-    }
-    private fun onStopAnimation(recogView : RecognitionProgressView){
-        recogView.stop()
-    }
-
 }
-
-//class listener : RecognitionListener {
-//
-//    override fun onReadyForSpeech(params: Bundle) {
-//        Log.d(TAG, "onReadyForSpeech")
-//
-//    }
-//
-//    override fun onBeginningOfSpeech() {
-//        Log.d(TAG, "onBeginningOfSpeech")
-//    }
-//
-//    override fun onRmsChanged(rmsdB: Float) {
-//        Log.d(TAG, "onRmsChanged")
-//    }
-//
-//    override fun onBufferReceived(buffer: ByteArray) {
-//        Log.d(TAG, "onBufferReceived")
-//    }
-//
-//    override fun onEndOfSpeech() {
-//        Log.d(TAG, "onEndofSpeech")
-//    }
-//
-//    override fun onError(error: Int) {
-//        Log.d(TAG, "Kesalahan $error")
-//    }
-//
-//    override fun onResults(results: Bundle) {
-//        var str = String()
-//        val data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-//        val getViewInterface: viewInterface? = null
-//        getViewInterface?.getOnResults(data)
-//        Log.d(TAG, "onResults")
-//    }
-//
-//    override fun onPartialResults(partialResults: Bundle) {
-////        Log.d(TAG, "onPartialResults")
-//        val data = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-//
-//        Log.d(TAG, "onPartials")
-//    }
-//
-//    override fun onEvent(eventType: Int, params: Bundle) {
-//        Log.d(TAG, "onEvent $eventType")
-//    }
-//}
-
-//interface viewInterface {
-//
-//    fun getOnResults(results: ArrayList<String>)
-//
-//}
-
-
-
-
-//fun onClick(v: View) {
-//    if (v.getId() === R.id.btn_speak) {
-//        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-//        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-//        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "voice.recognition.test")
-//
-//        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5)
-//        sr.startListening(intent)
-//        Log.i("111111", "11111111")
-//    }
-//}
 
 

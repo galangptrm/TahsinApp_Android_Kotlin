@@ -33,10 +33,10 @@ class PilihSuratAdapter (val suratList: SuratList): RecyclerView.Adapter<PilihSu
             holder.view.setBackgroundColor(Color.GREEN)
 
             val toAyatPage_intent = Intent(holder.view.context, PilihAyatActivity::class.java)
-            toAyatPage_intent.putExtra("namaSurat_extra", surat.nama)
-            toAyatPage_intent.putExtra("nomorSurat_extra", surat.nomor)
-            toAyatPage_intent.putExtra("ayatAwal_extra", surat.start)
-            toAyatPage_intent.putExtra("jumlahAyat_extra", surat.ayat.toInt())
+            toAyatPage_intent.putExtra("namaSurat_extra", surat.nama) //NAMA SURAT
+            toAyatPage_intent.putExtra("nomorSurat_extra", surat.nomor) // NOMOR URUT SURAT
+            toAyatPage_intent.putExtra("ayatAwal_extra", surat.start) //NOMOR URUT AYAT PERTAMA DARI KESELURUHAN SURAT ALQURAN
+            toAyatPage_intent.putExtra("jumlahAyat_extra", surat.ayat.toInt()) //JUMLAH AYAT
 
             holder.view.context.startActivity(toAyatPage_intent)
         }
