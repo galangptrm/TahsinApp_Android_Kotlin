@@ -34,17 +34,19 @@ class ListKesalahanAdapter (val kesalahanList: ArrayList<Kesalahan>): RecyclerVi
             holder?.view?.txtView_jenisKesalahan?.text = " Kelebihan huruf "
             holder?.view?.txtView_lokasiKesalahan?.text = "Kata"+" '"+ kesalahan.teks +"' tidak terdapat pada ayat"
             holder?.view?.txtView_jenisKesalahan.setBackgroundColor(Color.RED)
+            holder?.view?.txtView_jenisKesalahan.setTextColor(Color.WHITE)
 
         } else if(kesalahan.jenis.equals("INSERT")){
             holder?.view?.txtView_jenisKesalahan?.text = " Kekurangan huruf "
             holder?.view?.txtView_lokasiKesalahan?.text = "Anda lupa membaca"+" '"+ kesalahan.teks +"' pada ayat"
-            holder?.view?.txtView_jenisKesalahan.setBackgroundColor(Color.BLUE)
+            holder?.view?.txtView_jenisKesalahan.setBackgroundColor(Color.YELLOW )
+            holder?.view?.txtView_jenisKesalahan.setTextColor(Color.BLACK)
 
         } else {
             holder?.view?.setVisibility(View.GONE);
             holder?.view?.setLayoutParams(RecyclerView.LayoutParams(0, 0))
         }
-        holder?.view?.txtView_jenisKesalahan.setTextColor(Color.WHITE)
+
     }
 }
 

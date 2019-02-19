@@ -4,4 +4,5 @@ class Kesalahan(
         val jenis: String,
         val teks: String,
         val hurufAwal : Int,
-        val hurufAkhir : Int)
+        val hurufAkhir : Int
+)

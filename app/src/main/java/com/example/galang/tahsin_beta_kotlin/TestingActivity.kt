@@ -1,6 +1,5 @@
 package com.example.galang.tahsin_beta_kotlin
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -15,8 +14,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
-import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.widget.Toast
 import com.example.galang.tahsin_beta_kotlin.Adapter.ListKesalahanAdapter
 import com.example.galang.tahsin_beta_kotlin.Algorithm.diff_match_patch
@@ -24,11 +21,10 @@ import com.example.galang.tahsin_beta_kotlin.Model.AyatGundulList
 import com.example.galang.tahsin_beta_kotlin.Model.Kesalahan
 import kotlinx.android.synthetic.main.activity_testing.*
 import kotlin.collections.ArrayList
-import com.github.zagum.speechrecognitionview.adapters.RecognitionListenerAdapter
 import com.github.zagum.speechrecognitionview.RecognitionProgressView
-import java.security.Permission
 import android.Manifest
 import android.view.View
+import com.example.galang.tahsin_beta_kotlin.Algorithm.LevensteinDistance
 
 
 class TestingActivity : AppCompatActivity(), RecognitionListener {
@@ -44,6 +40,9 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
         _speechInitialization()
 
     }
+
+    var ayatGundul = ""
+    var kesalahanList : ArrayList<Kesalahan> = arrayListOf()
 
     private fun _permissionRequest(){
         // Here, thisActivity is the current activity
@@ -64,8 +63,24 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
         }
     }
 
-    var ayatGundul = ""
-    var kesalahanList : ArrayList<Kesalahan> = arrayListOf()
+    private fun _objectInitiation() {
+
+        val namaSurat   = intent.getStringExtra("namaSurat_extra")
+        val nomorAyat   = intent.getIntExtra("nomorAyat_extra", 1)
+        val textAyat    = intent.getStringExtra("textAyat_extra")
+        val urutanAyat  = intent.getIntExtra("urutanAyat_extra", 1)
+
+        if (namaSurat != "Al Fatihah" && nomorAyat==1){
+            this.ayatGundul = AyatGundulList().getAyat(urutanAyat).substring(23, AyatGundulList().getAyat(urutanAyat).length)
+        }else {
+            this.ayatGundul = AyatGundulList().getAyat(urutanAyat)
+        }
+
+        txtView_distanceResult.text = "Tekan tombol rekam dan mulai membaca ayat"
+
+        txtView_AyatPreview.text = textAyat
+        supportActionBar?.title = namaSurat + " : " + nomorAyat.toString()
+    }
 
     private fun _fetchKesalahan(kesalahanList : ArrayList<Kesalahan>){
         recView_kesalahan.layoutManager = LinearLayoutManager(this)
@@ -79,15 +94,19 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
         dmp.Diff_Timeout = 5.0F
         dmp.diff_cleanupSemantic(diff)
 
-        val levDistance = dmp.diff_levenshtein(diff)
-        val percentDifference = levDistance.toFloat()/strSpeech.length.toFloat()
+        val levensteinDistance = LevensteinDistance()
+        val resultDistance = levensteinDistance.dynamicEditDistance(strAyat.toCharArray(), strSpeech.toCharArray())
+
+        val percentDifference = resultDistance.toFloat()/strSpeech.length.toFloat()
+
         txtView_distanceResult.text  = ""
 
         if (percentDifference >= 0.92 ){
             txtView_distanceResult.text = "Perbedaan bacaan terlalu besar, " +
-                    "kemungkinan anda salah membaca ayat (" + "%.2f".format(percentDifference*100) +"%)"
+                    "kemungkinan anda salah membaca ayat (jumlah kesalahan : " + "%.2f".format(percentDifference*100) +"%)"
         }else{
             txtView_distanceResult.text = "Jumlah Kesalahan = " + "%.2f".format(percentDifference*100) + "%"
+
             var tempString = ""
 
             for (indx in diff.indices) {
@@ -95,6 +114,7 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
             }
 
             var ss = SpannableString(tempString)
+
             var tempIndx = 0
 
             if (diff!=null){
@@ -103,22 +123,32 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
                         break
                     }
                     if (diff[indx].operation.name == "EQUAL") {
-                        kesalahanList.add(indx, Kesalahan(diff[indx].operation.name, diff[indx].text,
-                                tempIndx,tempIndx + diff[indx].text.length))
+                        kesalahanList.add(indx, Kesalahan(diff[indx].operation.name,
+                                diff[indx].text,
+                                tempIndx,
+                                tempIndx + diff[indx].text.length))
                         tempIndx += diff[indx].text.length
                     }
-                    else if (diff[indx].operation.name == "DELETE") {
+                    else if (diff[indx].operation.name == "DELETE")
+                    {
                         var fcsRed = BackgroundColorSpan(Color.RED)
                         ss.setSpan(fcsRed, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                        kesalahanList.add(indx, Kesalahan(diff[indx].operation.name, diff[indx].text,
-                                tempIndx,tempIndx + diff[indx].text.length))
+                        kesalahanList.add(indx,
+                                Kesalahan(diff[indx].operation.name,
+                                        diff[indx].text,
+                                        tempIndx,
+                                        tempIndx + diff[indx].text.length))
                         tempIndx += diff[indx].text.length
                     }
-                    else if (diff[indx].operation.name == "INSERT") {
-                        var fcsGrn = BackgroundColorSpan(Color.BLUE)
+                    else if (diff[indx].operation.name == "INSERT")
+                    {
+                        var fcsGrn = BackgroundColorSpan(Color.YELLOW)
                         ss.setSpan(fcsGrn, tempIndx, tempIndx + diff[indx].text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                        kesalahanList.add(indx, Kesalahan(diff[indx].operation.name, diff[indx].text,
-                                tempIndx,tempIndx + diff[indx].text.length))
+                        kesalahanList.add(indx,
+                                Kesalahan(diff[indx].operation.name,
+                                        diff[indx].text,
+                                        tempIndx,
+                                        tempIndx + diff[indx].text.length))
                         tempIndx += diff[indx].text.length
                     }
                 }
@@ -128,25 +158,11 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
 
     }
 
-    private fun _objectInitiation() {
-
-        val namaSurat   = intent.getStringExtra("namaSurat_extra")
-        val nomorAyat   = intent.getIntExtra("nomorAyat_extra", 1)
-        val textAyat    = intent.getStringExtra("textAyat_extra")
-        val urutanAyat  = intent.getIntExtra("urutanAyat_extra", 1)
-
-        this.ayatGundul = AyatGundulList().getAyat(urutanAyat)
-
-        txtView_distanceResult.text = "Tekan tombol rekam dan mulai membaca ayat"
-
-        txtView_AyatPreview.text = textAyat
-        supportActionBar?.title = namaSurat + " : " + nomorAyat.toString()
-    }
-
     private fun _speechInitialization() {
 
         val speech = SpeechRecognizer.createSpeechRecognizer(this)
         speech.setRecognitionListener(this)
+
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
@@ -178,21 +194,14 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
             if (intent.resolveActivity(packageManager) != null) {
                 speech.startListening(intent)
             } else {
-                Toast.makeText(this, "Your Device not Support", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Your Device not Support Speech Recognizer", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun testing() {
-        var numbers = "0123456789"
-        var ssb = SpannableString(numbers)
-
-        ssb.setSpan(ForegroundColorSpan(Color.RED), 1, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        txtView_distanceResult.text = ssb
-
-    }
-
     override fun onReadyForSpeech(params: Bundle?) {
+        this.findViewById<RecognitionProgressView>(R.id.recognition_animation).visibility = View.VISIBLE
+        txtView_distanceResult.text = "Silahkan mulai baca ayat..."
     }
 
     override fun onRmsChanged(rmsdB: Float) {
@@ -208,12 +217,12 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
     }
 
     override fun onEvent(eventType: Int, params: Bundle?) {
-
     }
 
     override fun onBeginningOfSpeech() {
-        txtView_distanceResult.text = "Mendengarkan..."
         this.findViewById<RecognitionProgressView>(R.id.recognition_animation).visibility = View.VISIBLE
+        txtView_distanceResult.text = "Mendengarkan..."
+        
     }
 
     override fun onEndOfSpeech() {
@@ -222,7 +231,17 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
     }
 
     override fun onError(error: Int) {
-        Toast.makeText(this, "Error : "+error, Toast.LENGTH_SHORT).show()
+        when(error){
+            1-> Toast.makeText(this, "Error 1 - jaringan internet terlalu lambat, silahkan coba lagi ", Toast.LENGTH_SHORT).show()
+            2-> Toast.makeText(this, "Error 2 - kesalahan pada jaringan internet, silahkan coba lagi ", Toast.LENGTH_SHORT).show()
+            3-> Toast.makeText(this, "Error 3 - perekaman suara gagal, silahkan coba lagi ", Toast.LENGTH_SHORT).show()
+            4-> Toast.makeText(this, "Error 4 - kesalahan pada server, silahkan coba lagi", Toast.LENGTH_SHORT).show()
+            5-> Toast.makeText(this, "Error 5 - aplikasi mengalami kesalahan, silahkan coba lagi ", Toast.LENGTH_SHORT).show()
+            6-> Toast.makeText(this, "Error 6 - suara anda tidak terdengar, silahkan coba lagi ", Toast.LENGTH_SHORT).show()
+            7-> Toast.makeText(this, "Error 7 - suara anda tidak terdengar, silahkan coba lagi ", Toast.LENGTH_SHORT).show()
+            8-> Toast.makeText(this, "Error 8 - aplikasi sedang sibuk menerjemahkan, silahkan coba lagi ", Toast.LENGTH_SHORT).show()
+            9-> Toast.makeText(this, "Error 9 - aplikasi tidak mendapat izin merekam suara", Toast.LENGTH_SHORT).show()
+        }
         txtView_distanceResult.text = "Tekan tombol rekam dan mulai membaca ayat"
     }
 
@@ -235,6 +254,7 @@ class TestingActivity : AppCompatActivity(), RecognitionListener {
         _diff_match(ayatGundul, txtView_SpeechResult.text.toString())
         _fetchKesalahan(this.kesalahanList)
     }
+
 }
 
 

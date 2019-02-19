@@ -1,25 +1,9 @@
 package com.example.galang.tahsin_beta_kotlin.Algorithm;
 import java.util.ArrayList;
 
-public class EditDistance {
+public class LevensteinDistance {
 
-    public ArrayList textList = new ArrayList();
-
-    /**
-     * Uses recursion to find minimum edits
-     */
-    public int recEditDistance(char[]  str1, char str2[], int len1,int len2){
-
-        if(len1 == str1.length){
-            return str2.length - len2;
-        }
-        if(len2 == str2.length){
-            return str1.length - len1;
-        }
-        return min(recEditDistance(str1, str2, len1 + 1, len2 + 1) + str1[len1] == str2[len2] ? 0 : 1, recEditDistance(str1, str2, len1, len2 + 1) + 1, recEditDistance(str1, str2, len1 + 1, len2) + 1);
-    }
-
-    /**
+     /**
      * Uses bottom up DP to find the edit distance
      */
     public int dynamicEditDistance(char[] str1, char[] str2){
@@ -44,7 +28,6 @@ public class EditDistance {
         }
         printActualEdits(temp, str1, str2);
         return temp[str1.length][str2.length];
-
     }
 
     /**
@@ -63,17 +46,17 @@ public class EditDistance {
                 i = i-1;
                 j = j-1;
             } else if (T[i][j] == T[i-1][j-1] + 1){
-                System.out.println("Edit " + str2[j-1] +"("+j+") in string2 to " + str1[i-1]);
-                textList.add("\"Edit \" + str2[j-1] +\"(\"+j+\") in string2 to \" + str1[i-1]");
+                //move diagonally to upper left
+                //Ganti str2 dengan str1
                 i = i-1;
                 j = j-1;
             } else if (T[i][j] == T[i-1][j] + 1) {
-                System.out.println("Add in string2 "+str1[i-1]);
-                textList.add("Add in string2 "+str1[i-1]);
+                //move to upper
+                //kekurangan huruf, tambahkan str1
                 i = i-1;
             } else if (T[i][j] == T[i][j-1] + 1){
-                System.out.println("Delete in string2 " + str2[j-1]);
-                textList.add("Delete in string2 " + str2[j-1]);
+                //move to left
+                //hapus huruf pada str2
                 j = j -1;
             }
             else{
@@ -83,12 +66,12 @@ public class EditDistance {
 
         while (true){
             if (j>0){
-                System.out.println("Delete in string2 " + str2[j-1]);
-                textList.add("Delete in string2 " + str2[j-1]);
+                //move to left
+                //hapus huruf di akhir str2
                 j = j-1;
             } else if(i>0) {
-                System.out.println("Add in string2 "+str1[i-1]);
-                textList.add("Add in string2 "+str1[i-1]);
+                //move to upper
+                //tambahkan huruf di akhir str1
                 i=i-1;
             } else{
                 break;
@@ -98,24 +81,9 @@ public class EditDistance {
     }
 
     private int min(int a,int b, int c){
+        //cari nilai minimal dari atas, kiri & serong kiri atas
         int l = Math.min(a, b);
         return Math.min(l, c);
-    }
-
-    public static void main(String args[]){
-        String str1 = "abbc";
-        String str2 = "acbc";
-        EditDistance editDistance = new EditDistance();
-        int result = editDistance.dynamicEditDistance(str1.toCharArray(), str2.toCharArray());
-        System.out.print(result);
-    }
-
-    public int execute(String stringPrimer, String stringSekunder){
-        String str1 = stringPrimer;
-        String str2 = stringSekunder;
-        EditDistance editDistance = new EditDistance();
-        int result = editDistance.dynamicEditDistance(str1.toCharArray(), str2.toCharArray());
-        return result;
     }
 
 }
