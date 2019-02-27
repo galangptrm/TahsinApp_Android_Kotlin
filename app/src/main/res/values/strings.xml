@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Tahsin_Quran</string>
     <string name="title_activity_baca_ayat">BacaAyat</string>
+    <string name="pilih_ayat">Pilih Ayat</string>
+    <string name="sampai">sampai</string>
+    <string name="uji">Uji</string>
 </resources>

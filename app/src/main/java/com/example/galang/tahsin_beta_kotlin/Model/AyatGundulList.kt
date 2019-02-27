@@ -1,6 +1,18 @@
 package com.example.galang.tahsin_beta_kotlin.Model
 
 class AyatGundulList {
+
+    fun getAyat(indx : Int): String{
+        var temp = ayatGundul[indx]
+        return temp
+    }
+
+    fun getSomeAyats(startIndx : Int, endIndx : Int): String {
+        var ayatList = ayatGundul.subList(startIndx, endIndx)
+        var ayat = ayatList.joinToString(separator = "\n")
+        return ayat
+    }
+
     val ayatGundul =
             listOf( "بسم الله الرحمن الرحيم" ,
                     "الحمد لله رب العالمين" ,
@@ -6240,9 +6252,5 @@ class AyatGundulList {
                     "من الجنة والناس"
                     )
 
-    fun getAyat(indx : Int): String{
-        var temp = ayatGundul[indx]
-        return temp
-    }
 }
 
