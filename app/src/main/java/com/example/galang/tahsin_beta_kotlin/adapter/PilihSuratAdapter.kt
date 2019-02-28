@@ -1,13 +1,12 @@
-package com.example.galang.tahsin_beta_kotlin.Adapter
+package com.example.galang.tahsin_beta_kotlin.adapter
 
 import android.content.Intent
-import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.galang.tahsin_beta_kotlin.Model.SuratList
-import com.example.galang.tahsin_beta_kotlin.PilihAyatActivity
+import com.example.galang.tahsin_beta_kotlin.model.SuratList
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.PilihAyatActivity
 import com.example.galang.tahsin_beta_kotlin.R
 import kotlinx.android.synthetic.main.list_surat_layout.view.*
 

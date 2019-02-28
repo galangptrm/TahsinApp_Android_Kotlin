@@ -1,19 +1,17 @@
-package com.example.galang.tahsin_beta_kotlin.Adapter
+package com.example.galang.tahsin_beta_kotlin.adapter
 
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.example.galang.tahsin_beta_kotlin.Model.AyatList
 import com.example.galang.tahsin_beta_kotlin.R
-import com.example.galang.tahsin_beta_kotlin.TestingActivity
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.NAMASURAT_EXTRA
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.NOMORAYATAWAL_EXTRA
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.TEXTAYAT_EXTRA
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.TYPE_INTENT
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.URUTANAYAT_EXTRA
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.NAMASURAT_EXTRA
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.NOMORAYATAWAL_EXTRA
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.TEXTAYAT_EXTRA
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.TYPE_INTENT
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.URUTANAYAT_EXTRA
 import kotlinx.android.synthetic.main.list_ayat_layout.view.*
 
 class PilihAyatAdapter (val ayatList: List<String>, val namaSurat : String, val urutanAyatAwal : Int):

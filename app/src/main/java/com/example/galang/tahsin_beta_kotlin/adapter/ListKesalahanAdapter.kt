@@ -1,15 +1,13 @@
-package com.example.galang.tahsin_beta_kotlin.Adapter
+package com.example.galang.tahsin_beta_kotlin.adapter
 
-import android.annotation.SuppressLint
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.galang.tahsin_beta_kotlin.Model.Kesalahan
+import com.example.galang.tahsin_beta_kotlin.model.Kesalahan
 import com.example.galang.tahsin_beta_kotlin.R
 import kotlinx.android.synthetic.main.list_kesalahan_layout.view.*
 

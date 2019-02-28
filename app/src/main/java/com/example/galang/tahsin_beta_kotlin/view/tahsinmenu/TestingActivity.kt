@@ -1,4 +1,4 @@
-package com.example.galang.tahsin_beta_kotlin
+package com.example.galang.tahsin_beta_kotlin.view.tahsinmenu
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,19 +15,20 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.widget.Toast
-import com.example.galang.tahsin_beta_kotlin.Adapter.ListKesalahanAdapter
-import com.example.galang.tahsin_beta_kotlin.Algorithm.diff_match_patch
-import com.example.galang.tahsin_beta_kotlin.Model.AyatGundulList
-import com.example.galang.tahsin_beta_kotlin.Model.Kesalahan
+import com.example.galang.tahsin_beta_kotlin.adapter.ListKesalahanAdapter
+import com.example.galang.tahsin_beta_kotlin.algorithm.diff_match_patch
+import com.example.galang.tahsin_beta_kotlin.model.AyatGundulList
+import com.example.galang.tahsin_beta_kotlin.model.Kesalahan
 import kotlinx.android.synthetic.main.activity_testing.*
 import kotlin.collections.ArrayList
 import com.github.zagum.speechrecognitionview.RecognitionProgressView
 import android.Manifest
 import android.util.Log
 import android.view.View
-import com.example.galang.tahsin_beta_kotlin.Adapter.PilihAyatAdapter.Companion.fromAdapter
-import com.example.galang.tahsin_beta_kotlin.Algorithm.LevensteinDistance
-import com.example.galang.tahsin_beta_kotlin.PilihAyatActivity.Companion.fromActivity
+import com.example.galang.tahsin_beta_kotlin.adapter.PilihAyatAdapter.Companion.fromAdapter
+import com.example.galang.tahsin_beta_kotlin.algorithm.LevensteinDistance
+import com.example.galang.tahsin_beta_kotlin.R
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.PilihAyatActivity.Companion.fromActivity
 
 
 class TestingActivity : AppCompatActivity(), RecognitionListener {

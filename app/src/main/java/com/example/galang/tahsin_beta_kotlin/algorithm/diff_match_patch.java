@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.example.galang.tahsin_beta_kotlin.Algorithm;
+package com.example.galang.tahsin_beta_kotlin.algorithm;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

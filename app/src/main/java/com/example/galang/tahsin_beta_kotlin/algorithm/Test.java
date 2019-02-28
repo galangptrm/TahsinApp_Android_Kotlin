@@ -1,10 +1,8 @@
-package com.example.galang.tahsin_beta_kotlin.Algorithm;
+package com.example.galang.tahsin_beta_kotlin.algorithm;
 
 import java.io.CharArrayReader;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 
 public class Test {

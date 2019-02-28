@@ -11,9 +11,7 @@
  * @author fraser@google.com (Neil Fraser)
  */
 
-package com.example.galang.tahsin_beta_kotlin.Algorithm;
-
-import com.example.galang.tahsin_beta_kotlin.Algorithm.diff_match_patch;
+package com.example.galang.tahsin_beta_kotlin.algorithm;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

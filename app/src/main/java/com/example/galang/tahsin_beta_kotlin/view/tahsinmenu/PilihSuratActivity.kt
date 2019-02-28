@@ -1,4 +1,4 @@
-package com.example.galang.tahsin_beta_kotlin
+package com.example.galang.tahsin_beta_kotlin.view.tahsinmenu
 
 import android.app.ProgressDialog
 import android.content.Context
@@ -9,8 +9,9 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
-import com.example.galang.tahsin_beta_kotlin.Adapter.PilihSuratAdapter
-import com.example.galang.tahsin_beta_kotlin.Model.SuratList
+import com.example.galang.tahsin_beta_kotlin.adapter.PilihSuratAdapter
+import com.example.galang.tahsin_beta_kotlin.model.SuratList
+import com.example.galang.tahsin_beta_kotlin.R
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_pilih_surat.*
 import okhttp3.*

@@ -4,4 +4,15 @@
     <string name="pilih_ayat">Pilih Ayat</string>
     <string name="sampai">sampai</string>
     <string name="uji">Uji</string>
+    <string name="tahsin_menu">Tahsin</string>
+    <string name="pengingat_menu">Pengingat</string>
+    <string name="riwayat_menu">Riwayat</string>
+    <string name="prestasi_menu">Prestasi</string>
+    <string name="alarm_date">Tanggal</string>
+    <string name="alarm_time">Waktu</string>
+    <string name="catatan">Catatan</string>
+    <string name="content_hint_catatan">Tulis catatan untuk diingat</string>
+    <string name="save_button">simpan</string>
+    <string name="hello_blank_fragment">Hello</string>
+
 </resources>

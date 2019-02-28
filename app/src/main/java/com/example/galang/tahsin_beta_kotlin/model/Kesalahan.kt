@@ -1,4 +1,4 @@
-package com.example.galang.tahsin_beta_kotlin.Model
+package com.example.galang.tahsin_beta_kotlin.model
 
 class Kesalahan(
         val jenis: String,

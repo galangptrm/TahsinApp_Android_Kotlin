@@ -1,5 +1,4 @@
-package com.example.galang.tahsin_beta_kotlin.Algorithm;
-import java.util.ArrayList;
+package com.example.galang.tahsin_beta_kotlin.algorithm;
 
 public class LevensteinDistance {
 

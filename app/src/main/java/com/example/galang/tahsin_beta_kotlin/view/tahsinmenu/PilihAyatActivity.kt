@@ -1,23 +1,20 @@
-package com.example.galang.tahsin_beta_kotlin
+package com.example.galang.tahsin_beta_kotlin.view.tahsinmenu
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.text.TextWatcher
 import android.util.Log
-import android.view.View
-import android.widget.Toast
-import com.example.galang.tahsin_beta_kotlin.Adapter.PilihAyatAdapter
-import com.example.galang.tahsin_beta_kotlin.Model.AyatDiakritikList
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.NAMASURAT_EXTRA
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.NOMORAYATAKHIR_EXTRA
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.NOMORAYATAWAL_EXTRA
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.TEXTAYAT_EXTRA
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.TYPE_INTENT
-import com.example.galang.tahsin_beta_kotlin.TestingActivity.Companion.URUTANAYAT_EXTRA
+import com.example.galang.tahsin_beta_kotlin.adapter.PilihAyatAdapter
+import com.example.galang.tahsin_beta_kotlin.model.AyatDiakritikList
+import com.example.galang.tahsin_beta_kotlin.R
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.NAMASURAT_EXTRA
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.NOMORAYATAKHIR_EXTRA
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.NOMORAYATAWAL_EXTRA
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.TEXTAYAT_EXTRA
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.TYPE_INTENT
+import com.example.galang.tahsin_beta_kotlin.view.tahsinmenu.TestingActivity.Companion.URUTANAYAT_EXTRA
 import kotlinx.android.synthetic.main.activity_pilih_ayat.*
-import java.util.*
 
 class PilihAyatActivity : AppCompatActivity() {
 

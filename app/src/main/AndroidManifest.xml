@@ -3,7 +3,7 @@
     package="com.example.galang.tahsin_beta_kotlin">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
@@ -13,33 +13,33 @@
         android:roundIcon="@mipmap/star"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".TestingActivity"
+        <activity
+            android:name=".view.tahsinmenu.TestingActivity"
             android:label="Baca ayat"
             android:launchMode="singleTop">
             <meta-data
                 android:name="android.PARENT_ACTIVITY"
-                android:value=".PilihAyatActivity"
-                />
+                android:value=".PilihAyatActivity" />
         </activity>
-
-        <activity android:name=".PilihSuratActivity"
-            android:launchMode="singleTop"
-            >
+        <activity
+            android:name=".view.tahsinmenu.PilihSuratActivity"
+            android:launchMode="singleTop"></activity>
+        <activity
+            android:name=".view.tahsinmenu.PilihAyatActivity"
+            android:label="Pilih Ayat"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.tahsinmenu.PilihSuratActivity" />
+        </activity>
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".PilihAyatActivity"
-            android:launchMode="singleTop"
-            android:label="Pilih Ayat">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".PilihSuratActivity"
-                />
-        </activity>
+        <activity android:name=".view.pengingatmenu.activity.PengingatActivity"></activity>
     </application>
 
 </manifest>
